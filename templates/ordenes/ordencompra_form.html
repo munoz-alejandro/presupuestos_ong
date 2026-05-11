@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">{{ title }}</h1>
+    <a class="btn btn-outline-danger" href="{{ cancel_url }}">Cancelar</a>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <h2 class="h5 mt-4">Líneas de Presupuesto</h2>
+    {% if formset.non_form_errors %}
+      <div class="alert alert-danger">{{ formset.non_form_errors }}</div>
+    {% endif %}
+
+    {{ formset.management_form }}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Presupuesto</th>
+            <th>Monto</th>
+            <th>Eliminar</th>
+          </tr>
+        </thead>
+        <tbody id="lineas-orden-compra">
+          {% for line_form in formset %}
+            <tr>
+              {% for hidden in line_form.hidden_fields %}
+                {{ hidden }}
+              {% endfor %}
+              <td>
+                {{ line_form.presupuesto }}
+                {% for error in line_form.presupuesto.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+              </td>
+              <td>
+                {{ line_form.monto }}
+                {% for error in line_form.monto.errors %}
+                  <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+              </td>
+              <td>
+                {% if line_form.DELETE %}
+                  {{ line_form.DELETE }}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-outline-secondary mb-3" id="agregar-linea" type="button">Agregar línea</button>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+  </form>
+
+  <template id="empty-linea-form">
+    <tr>
+      {% for hidden in formset.empty_form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+      <td>{{ formset.empty_form.presupuesto }}</td>
+      <td>{{ formset.empty_form.monto }}</td>
+      <td>
+        {% if formset.empty_form.DELETE %}
+          {{ formset.empty_form.DELETE }}
+        {% endif %}
+      </td>
+    </tr>
+  </template>
+
+  {{ presupuestos_por_proyecto|json_script:"presupuestos-por-proyecto" }}
+  <script>
+    const presupuestosPorProyecto = JSON.parse(
+      document.getElementById("presupuestos-por-proyecto").textContent
+    );
+    const proyectoSelect = document.getElementById("id_proyecto");
+    const lineasOrdenCompra = document.getElementById("lineas-orden-compra");
+    const agregarLineaButton = document.getElementById("agregar-linea");
+    const totalFormsInput = document.querySelector("input[name$='-TOTAL_FORMS']");
+    const emptyLineaForm = document.getElementById("empty-linea-form");
+
+    function actualizarSelectPresupuesto(select) {
+      const presupuestos = presupuestosPorProyecto[proyectoSelect.value] || [];
+      const selectedValue = select.value;
+      select.replaceChildren(new Option("---------", ""));
+
+      presupuestos.forEach((presupuesto) => {
+        const option = new Option(presupuesto.label, presupuesto.id);
+        option.selected = String(presupuesto.id) === selectedValue;
+        select.add(option);
+      });
+    }
+
+    function actualizarPresupuestos() {
+      document
+        .querySelectorAll("select[id$='-presupuesto']")
+        .forEach(actualizarSelectPresupuesto);
+    }
+
+    function agregarLinea() {
+      const formIndex = Number(totalFormsInput.value);
+      const rowHtml = emptyLineaForm.innerHTML.replaceAll("__prefix__", formIndex);
+      lineasOrdenCompra.insertAdjacentHTML("beforeend", rowHtml);
+      totalFormsInput.value = formIndex + 1;
+
+      const nuevaLinea = lineasOrdenCompra.lastElementChild;
+      const presupuestoSelect = nuevaLinea.querySelector("select[id$='-presupuesto']");
+      if (presupuestoSelect) {
+        actualizarSelectPresupuesto(presupuestoSelect);
+      }
+    }
+
+    if (proyectoSelect) {
+      actualizarPresupuestos();
+      proyectoSelect.addEventListener("change", actualizarPresupuestos);
+    }
+
+    if (agregarLineaButton) {
+      agregarLineaButton.addEventListener("click", agregarLinea);
+    }
+  </script>
+{% endblock %}

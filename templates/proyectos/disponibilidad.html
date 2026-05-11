@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block title %}Disponibilidad {{ proyecto.codigo }}{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">Disponibilidad {{ proyecto.codigo }}</h1>
+    <a class="btn btn-outline-secondary" href="{% url 'proyecto-list' %}">Volver</a>
+  </div>
+
+  <p class="text-muted">{{ proyecto.nombre }}</p>
+
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Rubro</th>
+        <th>Presupuesto</th>
+        <th>Donado</th>
+        <th>Gastado</th>
+        <th>Disponible</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td>{{ row.presupuesto.rubro }}</td>
+          <td>{{ row.presupuesto.presupuesto|floatformat:"2u"|intcomma:False }}</td>
+          <td>{{ row.donado|floatformat:"2u"|intcomma:False }}</td>
+          <td>{{ row.gastado|floatformat:"2u"|intcomma:False }}</td>
+          <td>{{ row.disponible|floatformat:"2u"|intcomma:False }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-center">No hay presupuestos registrados para este proyecto.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

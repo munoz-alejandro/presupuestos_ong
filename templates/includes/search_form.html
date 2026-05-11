@@ -1,0 +1,19 @@
+<form class="row g-2 mb-3" method="get">
+  <div class="col-sm-8 col-md-6 col-lg-4">
+    <input
+      class="form-control"
+      name="q"
+      placeholder="Buscar..."
+      type="search"
+      value="{{ q }}"
+    >
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-primary" type="submit">Filtrar</button>
+  </div>
+  {% if q %}
+    <div class="col-auto">
+      <a class="btn btn-outline-secondary" href="{{ request.path }}">Limpiar</a>
+    </div>
+  {% endif %}
+</form>

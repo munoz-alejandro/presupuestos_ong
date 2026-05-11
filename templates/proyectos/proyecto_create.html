@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3">{{ title }}</h1>
+    <a class="btn btn-outline-danger" href="{{ cancel_url }}">Cancelar</a>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% if object.codigo %}
+      <div class="mb-3">
+        <label class="form-label">Codigo</label>
+        <input class="form-control" value="{{ object.codigo }}" readonly>
+      </div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="mb-3">
+        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% for error in field.errors %}
+          <div class="text-danger small">{{ error }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+  </form>
+
+  {{ form.municipios_por_departamento|json_script:"municipios-por-departamento" }}
+  <script>
+    const municipiosPorDepartamento = JSON.parse(
+      document.getElementById("municipios-por-departamento").textContent
+    );
+    const departamentoSelect = document.getElementById("id_departamento");
+    const municipioSelect = document.getElementById("id_municipio");
+
+    function actualizarMunicipios(municipioSeleccionado = "") {
+      const municipios = municipiosPorDepartamento[departamentoSelect.value] || [];
+      const placeholder = municipios.length
+        ? "Seleccione un municipio"
+        : "Seleccione un departamento primero";
+
+      municipioSelect.replaceChildren(new Option(placeholder, ""));
+
+      municipios.forEach((municipio) => {
+        const option = new Option(municipio, municipio);
+        option.selected = municipio === municipioSeleccionado;
+        municipioSelect.add(option);
+      });
+    }
+
+    if (departamentoSelect && municipioSelect) {
+      actualizarMunicipios(municipioSelect.value);
+      departamentoSelect.addEventListener("change", () => actualizarMunicipios());
+    }
+  </script>
+{% endblock %}

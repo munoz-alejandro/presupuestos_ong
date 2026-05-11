@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Fondos ONG{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom mb-4">
+      <div class="container">
+        <a class="navbar-brand" href="{% url 'proyecto-list' %}">Fondos ONG</a>
+        <div class="navbar-nav">
+          <a class="nav-link" href="{% url 'proyecto-list' %}">Proyectos</a>
+          <a class="nav-link" href="{% url 'presupuesto-list' %}">Presupuesto</a>
+          <a class="nav-link" href="{% url 'donacion-list' %}">Donaciones</a>
+          <a class="nav-link" href="{% url 'ordencompra-list' %}">Orden de Compra</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+    <script>
+      function formatDayMonthYear(value) {
+        const digits = value.replace(/\D/g, "").slice(0, 8);
+        if (digits.length <= 2) {
+          return digits;
+        }
+        if (digits.length <= 4) {
+          return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+        }
+        return `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4)}`;
+      }
+
+      document.querySelectorAll("[data-date-input='day-month-year']").forEach((input) => {
+        input.addEventListener("input", () => {
+          input.value = formatDayMonthYear(input.value);
+        });
+        input.addEventListener("blur", () => {
+          input.value = formatDayMonthYear(input.value);
+        });
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+      if (window.flatpickr) {
+        flatpickr("[data-date-input='day-month-year']", {
+          allowInput: true,
+          dateFormat: "d-m-Y",
+        });
+      }
+    </script>
+  </body>
+</html>

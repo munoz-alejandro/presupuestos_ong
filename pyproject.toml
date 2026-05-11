@@ -1,0 +1,14 @@
+[project]
+name = "fondosong"
+version = "0.0.1"
+description = "Fondos para ONG"
+readme = "README.md"
+requires-python = ">=3.13"
+license = {text = "MIT"}
+authors = [
+    {name = "Alejandro Muñoz", email = "alejandro.munoz@gmail.com"}
+]
+
+dependencies = [
+    "Django",
+]

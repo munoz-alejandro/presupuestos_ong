@@ -1,0 +1,10 @@
+{% if cascade_items %}
+  <div class="alert alert-warning">
+    <strong>Atención:</strong> al eliminar este registro también se eliminarán:
+    <ul class="mb-0">
+      {% for item in cascade_items %}
+        <li>{{ item.count }} {{ item.label }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endif %}

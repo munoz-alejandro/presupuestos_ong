@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <h1 class="h3 mb-3">{{ title }}</h1>
+  <p>Estas seguro que quieres eliminar la orden de compra: <strong>{{ object }}</strong>?</p>
+  {% include "includes/cascade_warning.html" %}
+
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn btn-outline-secondary" href="{{ cancel_url }}">Cancelar</a>
+  </form>
+{% endblock %}
