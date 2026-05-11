@@ -193,6 +193,11 @@ class DonacionCreateView(CreateView):
     success_url = reverse_lazy("donacion-list")
     extra_context = {"title": "Crear Donación", "cancel_url": reverse_lazy("donacion-list")}
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["presupuestos_por_proyecto"] = _presupuestos_por_proyecto()
+        return context
+
     def form_valid(self, form):
         messages.success(self.request, "Donación creada exitosamente.")
         return super().form_valid(form)
@@ -208,6 +213,7 @@ class DonacionUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context["title"] = f"Editar Donación {self.object}"
         context["cancel_url"] = reverse_lazy("donacion-list")
+        context["presupuestos_por_proyecto"] = _presupuestos_por_proyecto()
         return context
 
     def form_valid(self, form):

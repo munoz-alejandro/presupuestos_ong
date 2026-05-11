@@ -26,4 +26,34 @@
 
     <button class="btn btn-primary" type="submit">Guardar</button>
   </form>
+
+  {{ presupuestos_por_proyecto|json_script:"presupuestos-por-proyecto" }}
+  <script>
+    const presupuestosPorProyecto = JSON.parse(
+      document.getElementById("presupuestos-por-proyecto").textContent
+    );
+    const proyectoSelect = document.getElementById("id_proyecto");
+    const presupuestoSelect = document.getElementById("id_presupuesto");
+
+    function actualizarPresupuestosDonacion() {
+      if (!proyectoSelect || !presupuestoSelect) {
+        return;
+      }
+
+      const presupuestos = presupuestosPorProyecto[proyectoSelect.value] || [];
+      const selectedValue = presupuestoSelect.value;
+      presupuestoSelect.replaceChildren(new Option("---------", ""));
+
+      presupuestos.forEach((presupuesto) => {
+        const option = new Option(presupuesto.label, presupuesto.id);
+        option.selected = String(presupuesto.id) === selectedValue;
+        presupuestoSelect.add(option);
+      });
+    }
+
+    if (proyectoSelect) {
+      actualizarPresupuestosDonacion();
+      proyectoSelect.addEventListener("change", actualizarPresupuestosDonacion);
+    }
+  </script>
 {% endblock %}

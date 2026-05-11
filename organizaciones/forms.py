@@ -96,6 +96,24 @@ class PresupuestoForm(BootstrapFormMixin, forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        proyecto_id = None
+
+        if self.data:
+            proyecto_id = self.data.get(self.add_prefix("proyecto"))
+        elif self.instance and self.instance.pk:
+            proyecto_id = self.instance.proyecto_id
+        elif self.initial.get("proyecto"):
+            proyecto = self.initial["proyecto"]
+            proyecto_id = getattr(proyecto, "pk", proyecto)
+
+        if proyecto_id:
+            try:
+                self.fields["presupuesto"].queryset = Presupuesto.objects.filter(proyecto_id=proyecto_id)
+            except (TypeError, ValueError):
+                self.fields["presupuesto"].queryset = Presupuesto.objects.none()
+        else:
+            self.fields["presupuesto"].queryset = Presupuesto.objects.none()
+
         self._style_fields()
 
     def clean(self):
