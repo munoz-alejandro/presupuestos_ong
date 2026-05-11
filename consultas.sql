@@ -1,4 +1,4 @@
--- (a) Porcentaje de ejecucion de fondos por cada proyecto registrado.
+-- Porcentaje de ejecucion de fondos por cada proyecto registrado.
 -- Ejecucion = total gastado por ordenes de compra / total recibido por donaciones.
 SELECT
     p.id,
@@ -24,7 +24,7 @@ LEFT JOIN (
 ) AS oc ON oc.proyecto_id = p.id
 ORDER BY p.codigo;
 
--- (b) Disponibilidad de fondos por cada rubro de presupuesto de un proyecto.
+-- Disponibilidad de fondos por cada rubro de presupuesto de un proyecto.
 -- Reemplazar :proyecto_id con el id del proyecto deseado.
 SELECT
     pr.id,
@@ -43,5 +43,5 @@ LEFT JOIN (
     FROM organizaciones_lineaordencompra
     GROUP BY presupuesto_id
 ) AS oc ON oc.presupuesto_id = pr.id
-WHERE pr.proyecto_id = :proyecto_id
+WHERE pr.proyecto_id = 5
 ORDER BY pr.rubro;

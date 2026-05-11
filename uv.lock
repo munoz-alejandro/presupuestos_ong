@@ -26,7 +26,7 @@ wheels = [
 ]
 
 [[package]]
-name = "prueba"
+name = "fondosong"
 version = "0.0.1"
 source = { virtual = "." }
 dependencies = [
