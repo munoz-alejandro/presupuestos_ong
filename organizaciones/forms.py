@@ -2,7 +2,6 @@ from decimal import Decimal
 
 from django import forms
 from django.forms import BaseInlineFormSet, inlineformset_factory
-from django.utils import timezone
 
 from .models import Donacion, LineaOrdenCompra, OrdenCompra, Presupuesto, Proyecto
 from .constants import MUNICIPIOS_POR_DEPARTAMENTO
@@ -141,9 +140,6 @@ class DonacionForm(BootstrapFormMixin, forms.ModelForm):
         cleaned_data = super().clean()
         proyecto = cleaned_data.get("proyecto")
         presupuesto = cleaned_data.get("presupuesto")
-
-        if proyecto and proyecto.fecha_final < timezone.localdate():
-            self.add_error("proyecto", "No se puede registrar una donación para un proyecto vencido.")
 
         if proyecto and presupuesto and presupuesto.proyecto_id != proyecto.id:
             self.add_error("presupuesto", "El presupuesto debe pertenecer al proyecto seleccionado.")
